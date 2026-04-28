@@ -3,6 +3,8 @@
 :root {
   /* Colors */
   --color-primary: #4F45E5;
+  --color-primary--trans: rgba(79, 69, 229, .04);
+  --color-primary--muted: rgba(79, 69, 229, .25);
   --color-secondary: #9333EA;
   --color-tertiary: #EC4899;
   --color-dark: #0A0A0F;
@@ -151,6 +153,7 @@ label{
   margin: 20px 0px 0px 20px;
 }
 
+textarea,
 input{
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -159,12 +162,52 @@ input{
   width: 100%;
   color: var(--color-light);
   outline: none;
+  max-height: 128px;
 }
 
+textarea,
 input:focus{
   outline: 2px solid rgba(255, 255, 255, 0.12);
 }
 
 ::placeholder{
   color: var(--color-gray);
+}
+
+/* --------------------------------
+  Components
+-----------------------------------*/
+
+.btn{
+  border-radius: var(--input-radius);
+  color: var(--color-light);
+  font-weight: 700;
+  padding: var(--card-padding);
+  height: 54px;
+}
+
+.btn:hover{
+  cursor: pointer;
+  filter: brightness(85%);
+}
+
+.submit-btn{
+  margin-top: 20px;
+  background: var(--primary-gradient);
+}
+
+.vibe-card{
+  color: var(--color-gray);
+  font-weight: 400;
+  padding: var(--card-padding);
+  border-radius: var(--input-radius);
+  background-color: var(--color-primary--trans);
+  border: 1px solid var(--color-primary--muted);
+}
+
+.vibe-active{
+  color: var(--color-primary);
+  font-weight: 700;
+  background-color: var(--color-primary--muted);
+  border: 2px solid var(--color-primary);
 }

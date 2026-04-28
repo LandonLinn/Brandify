@@ -32,6 +32,12 @@ export default function Home() {
     companyDesc: "",
   })
 
+  // API States ----
+  // Loading State
+  const [loading, setLoading] = useState(false)
+  // Error
+  const [error, setError] = useState<string | null>(null);
+
   const charCount = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     let brandDesc = event.target.value;
     let totalLength = brandDesc.length;
@@ -46,8 +52,16 @@ export default function Home() {
     })
   }
 
+  const handleTextAreaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value })
+    setChars(200 - value.length)
+  }
+
   const router = useRouter();
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
+      console.log("handleSubmit fired") // ← add this
+
     e.preventDefault()
 
     // Error Check
@@ -60,10 +74,38 @@ export default function Home() {
 
     setErrors(newErrors);
     const hasErrors = Object.values(newErrors).some(error => error !== "");
-    if (hasErrors) return;
+    // if (hasErrors) return;
 
-    // Route
-    router.push("/result")
+    if (hasErrors) {
+  console.log("Errors found:", newErrors) // ← add this
+  return
+}
+console.log("No errors, calling API...") // ← add this
+
+    // Call Claude API 
+    setLoading(true)
+    setError(null);
+
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(formData)
+      })
+
+      if (!response.ok) throw new Error("API call failed");
+
+      const brandKit = await response.json();
+
+      // Route
+      localStorage.setItem("brandKit", JSON.stringify(brandKit));
+      router.push("/result")
+
+    } catch (error) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -120,7 +162,8 @@ export default function Home() {
                     <button 
                       key={i}
                       className={`btn vibe-card ${formData.selectedVibe === vibe ? "vibe-active" : ""}`}
-                      onClick={() => setFormData({...formData, selectedVibe: vibe})}
+                      onClick={() => {
+                        setFormData({...formData, selectedVibe: vibe})}}
                     >
                       {vibe}
                     </button>
@@ -135,10 +178,13 @@ export default function Home() {
           </div>
           {/* Text Area */}
           <textarea 
-            name="brand-desc" 
+            name="companyDesc" 
             placeholder="e.g. We sell eco-friendly cleaning products for the home..." 
             maxLength={200} 
-            onChange={charCount}
+            onChange={(e) => {
+              charCount(e);
+              handleTextAreaChange(e);
+            }}
             required
           />
 
@@ -146,12 +192,13 @@ export default function Home() {
           <button 
             className="btn submit-btn"
             type="submit" 
+            disabled={loading === true ? true : false}
           >
             Generate Brand Kit &rarr;
           </button>
 
           {/* Error Status */}
-          {}
+          
 
         </form>
       </main>

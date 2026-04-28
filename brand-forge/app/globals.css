@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+:root {
+  /* Colors */
+  --color-primary: #4F45E5;
+  --color-secondary: #9333EA;
+  --color-tertiary: #EC4899;
+  --color-dark: #0A0A0F;
+  --color-light: #F8F8FF;
+  --color-gray: #888888;
+
+  --primary-gradient: linear-gradient(135deg, var(--color-primary), var(--color-secondary), var(--color-tertiary));
+
+  /* Decoration */
+  --shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  /* Font */
+
+  /* Spacing */
+  --max-width: 1000px;
+  --section-padding-main: 100px;
+
+}
+
+*,
+body{
+  font-family: "Inter", sans-serif;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+/* --------------------------------
+  Containers
+-----------------------------------*/
+.container{
+  max-width: var(--max-width);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section{
+  padding: var(--section-padding-main) 0;
+}
+
+/* --------------------------------
+  Colors
+-----------------------------------*/
+.dark{
+  background-color: var(--color-dark);
+}
+
+.text-on-dark{
+  color: var(--color-light);
+}
+
+.text-on-dark--muted{
+  color: var(--color-gray);
+}
+
+.text-gradient{
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Text */
+h1{font-size: clamp(2rem, 3vw, 4rem);}

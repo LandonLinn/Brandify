@@ -227,7 +227,7 @@ input:focus{
 
 .result-card{
   background-color: white;
-  border: 1px solid var(--color-gray);
+  border: 1px solid #8888884f;
 }
 
 .result-text{

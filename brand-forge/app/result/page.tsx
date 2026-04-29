@@ -171,7 +171,7 @@ export default function Result() {
                                     {/* Color block */}
                                     <div style={{backgroundColor: brandKit.colorPalette.surface}} className="w-11 h-11 rounded-xl"/>
                                     {/* Colors */}
-                                    <div className="">
+                                    <div>
                                         <p className="font-bold!">{brandKit.colorPalette.names.surface}</p>
                                         <p className="text-(--color-gray)! text-sm!">{brandKit.colorPalette.surface}</p>
                                     </div>
@@ -187,8 +187,36 @@ export default function Result() {
                     </div>
 
                     {/* Typography */}
-                    <div className="card result-card">
+                    <div className="card result-card flex flex-col gap-2">
                         <p className="result-text">TYPOGRAPHY</p>
+                        <div className="flex flex-col gap-5 h-full">
+                            {/* Heading */}
+                            <div className="">
+                                <p className="result-text text-xs!">HEADING</p>
+                                <p 
+                                    className="text-4xl! font-bold!"
+                                    style={{color: brandKit.colorPalette.primary}}
+                                >
+                                    {brandKit.typography.heading}
+                                </p>
+                                <p className="text-sm! text-(--color-gray)!">{brandKit.typography.headingStyle}</p>
+                            </div>
+
+                            <div className="h-1 border-b border-gray-200" />
+
+                            {/* Body */}    
+                            <div className="">
+                                <p className="result-text text-xs!">BODY</p>
+                                <p 
+                                    className="text-xl!"
+                                    style={{color: brandKit.colorPalette.primary}}
+                                >
+                                    {brandKit.typography.body}
+                                </p>
+                                <p className="text-sm! text-(--color-gray)!">{brandKit.typography.bodyStyle}</p>
+                            </div>
+                        </div>
+                        
                     </div>
 
                 </div>

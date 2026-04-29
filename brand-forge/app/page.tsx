@@ -99,7 +99,7 @@ console.log("No errors, calling API...") // ← add this
 
       // Route
       localStorage.setItem("brandKit", JSON.stringify(brandKit));
-      router.push("/result")
+      router.push("/result");
 
     } catch (error) {
       setError("Something went wrong. Please try again.");

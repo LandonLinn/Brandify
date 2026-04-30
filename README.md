@@ -148,8 +148,6 @@ Accepts `brandKit` and returns a single AI-generated logo image as a base64 data
 | `ANTHROPIC_API_KEY` | Anthropic Claude API key |
 | `OPENAI_API_KEY` | OpenAI API key |
 
-Never commit `.env.local` to version control. Both keys are server-side only — they are never exposed to the browser.
-
 ---
 
 ## Deployment

@@ -59,7 +59,7 @@ export function claudePrompt(formData: FormData): string {
         "emailSubject": "string"
     },
     "logoConceptIdeas": ["concept1", "concept2", "concept3"],
-    "brandArchetype": "string — e.g. The Creator, The Hero, The Sage",
+    "brandArchetype": "string — e.g. The Creator, The Hero, The Sage, etc., 2-3 words",
     "competitorSpacing": "string — 1-2 sentences on how this brand stands apart"
     }
     

@@ -512,10 +512,10 @@ export default function Result() {
                         <p className="result-text">BRAND VOICE</p>
                         <div className="flex flex-col gap-5 h-full">
                             {/* Personality */}
-                            <div className="flex gap-4 overflow-x-scroll md:overflow-auto">
+                            <div className="flex gap-4 overflow-x-auto">
                                 {brandKit.voiceProfile.personality.map((pers, i) => (
                                     <p 
-                                        className="text-sm! personality-tag font-bold! rounded-full px-3! py-2!"
+                                        className="text-sm! personality-tag font-bold! rounded-full px-3! py-2! text-nowrap"
                                         style={{color: brandKit.colorPalette.secondary, backgroundColor: `${brandKit.colorPalette.secondary}20`}}
                                         key={i}
                                     >
@@ -525,7 +525,7 @@ export default function Result() {
                             </div>
 
                             {/* Tone */}
-                            <p><strong>Tone:</strong> <span style={{ color:  brandKit.colorPalette.secondary }}>{`${brandKit.voiceProfile.tone}`}</span></p>
+                            <p><strong>Tone:</strong> <span style={{ color: brandKit.colorPalette.secondary }}>{`${brandKit.voiceProfile.tone}`}</span></p>
 
                             {/* Do vs Dont Say */}
                             <div className="grid grid-cols-1 gap-y-5 md:gap-y-0 md:gap-x-5 md:grid-cols-2">

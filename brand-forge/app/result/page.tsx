@@ -12,7 +12,7 @@ export default function Result() {
     const [brandKit, setBrandKit] = useState<BrandKit | null>(null);
 
     // State for images
-    const [image, setImage] = useState<string | null>(null)
+    const [image, setImage] = useState<string | null>(null);
     const [imageLoading, setImageLoading] = useState(false);
 
     // Brandkit mounted
@@ -48,6 +48,7 @@ export default function Result() {
 
                 // Response Failed
                 if (!response.ok) throw new Error("Failed to fetch images.");
+                
 
                 // Get response data & Save
                 const data = await response.json();
@@ -231,18 +232,24 @@ export default function Result() {
                     <div className="col-span-2 card result-card flex flex-col gap-2">
                         <p className="result-text">LOGO</p>
                         <div className="flex justify-bewteen gap-5 h-full">
-                            {image && (
-                                <div className="relative w-full h-64">
-                                    <Image
+                            {imageLoading ? (
+                            // Show skeleton while generating
+                            <div className="w-full h-64 bg-gray-100 animate-pulse rounded-xl" />
+                            ) : image ? (
+                            // Show image when ready
+                            <div className="relative w-full h-full">
+                                <img
                                     src={image}
                                     alt="Brand Logo"
-                                    fill
-                                    sizes="100%"
                                     className="object-contain"
-                                    loading="lazy"
-                                    />
-                                </div>
-                                )}
+                                />
+                            </div>
+                            ) : (
+                            // Show placeholder if failed
+                            <div className="w-full h-64 bg-gray-100 rounded-xl flex items-center justify-center">
+                                <p className="text-sm text-gray-400">No image generated</p>
+                            </div>
+                            )}
                         </div>
                         
                     </div>
@@ -252,7 +259,7 @@ export default function Result() {
                         <p className="result-text">BRAND VOICE</p>
                         <div className="flex flex-col gap-5 h-full">
                             {/* Personality */}
-                            <div className="flex gap-4 overflow-scroll">
+                            <div className="flex gap-4 overflow-x-scroll md:overflow-auto">
                                 {brandKit.voiceProfile.personality.map((pers, i) => (
                                     <p 
                                         className="text-sm! personality-tag font-bold! rounded-full px-3! py-2!"
@@ -313,7 +320,7 @@ export default function Result() {
                         {/* CTA Btn */}
                         <div className="w-full flex items-center justify-between gap-4">
                             <div>
-                                <p className="result-text text-xs! font-bold!">CTA Button</p>
+                                <p className="result-text text-xs! font-bold!">CTA BUTTON</p>
                                 <p>{brandKit.sampleCopy.ctaButton}</p>
                             </div>
                             

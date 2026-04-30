@@ -29,6 +29,7 @@ export async function POST(req: Request){
         return Response.json(brandKit);
 
     } catch (error) {
+        
         return Response.json(
             {error: "Failed to generate brand kit"},
             {status: 500}

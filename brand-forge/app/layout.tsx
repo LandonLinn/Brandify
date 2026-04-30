@@ -4,6 +4,9 @@ import "./globals.css";
 
 // Components
 import Header from "@/components/ui/Header";
+import { Footer } from "@/components/ui/Footer";
+import { AppProvider } from "./context/AppContext";
+import LoadingModal from "@/components/ui/LoadingModal";
 
 export const metadata: Metadata = {
   title: "BrandForge | AI Powered Brand Kit",
@@ -21,9 +24,13 @@ export default function RootLayout({
       className={`${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {/* Header */}
-        <Header />
-        {children}
+        <AppProvider >
+          {/* Header */}
+          <Header />
+          <LoadingModal />
+          {children}
+          <Footer />
+        </AppProvider>
       </body>
     </html>
   );

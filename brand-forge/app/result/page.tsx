@@ -1,15 +1,23 @@
 'use client';
 
-import Image from "next/image";
-
 import { CopyBtn } from "@/components/ui/CopyBtn";
 import { useEffect, useState } from "react";
 import { BrandKit } from "@/lib/types";
+import { useAppContext } from "../context/AppContext";
+
+import jsPDF from "jspdf"
+import JSZip from "jszip"
 
 export default function Result() {
 
     // State for brandKit
     const [brandKit, setBrandKit] = useState<BrandKit | null>(null);
+
+    // Downloading
+    const [downloading, setDownloading] = useState(false);
+
+    // Loading
+    const { setLoadingStatus } = useAppContext();
 
     // State for images
     const [image, setImage] = useState<string | null>(null);
@@ -38,6 +46,7 @@ export default function Result() {
         const fetchImages = async () => {
             try {
                 // Loading
+                setLoadingStatus("imaging");
                 setImageLoading(true);
 
                 const response = await fetch("/api/generate/images", {
@@ -59,6 +68,7 @@ export default function Result() {
                 console.error("Image fetch failed: ", error);
             } finally {
                 setImageLoading(false);
+                setLoadingStatus("done")
             }
         }
         
@@ -68,6 +78,249 @@ export default function Result() {
     }, [brandKit]);
 
     if (!brandKit) return <p>loading...</p>
+
+    const handleDownload = async () => {
+    if (!brandKit) return
+    setDownloading(true)
+
+    try {
+        // Build PDF
+        const doc = new jsPDF()
+        const pageWidth = doc.internal.pageSize.getWidth()
+
+       const pageHeight = doc.internal.pageSize.getHeight()
+        let y = 0 // track current y position
+
+        const checkPage = (currentY: number, needed: number = 20) => {
+        if (currentY + needed > pageHeight - 20) {
+            doc.addPage()
+            return 30 // reset y to top of new page
+        }
+        return currentY
+        }
+
+        // ── Cover
+        doc.setFillColor(brandKit.colorPalette.primary)
+        doc.rect(0, 0, pageWidth, 50, "F")
+        doc.setTextColor(255, 255, 255)
+        doc.setFontSize(28)
+        doc.setFont("helvetica", "bold")
+        doc.text(brandKit.brandName, 20, 28)
+        doc.setFontSize(12)
+        doc.setFont("helvetica", "normal")
+        doc.text(brandKit.tagline, 20, 40)
+
+        y = 65 // start tracking after cover
+
+        // ── Mission
+        y = checkPage(y, 30)
+        doc.setTextColor(17, 17, 17)
+        doc.setFontSize(10)
+        doc.setFont("helvetica", "bold")
+        doc.text("MISSION", 20, y)
+        y += 10
+        doc.setFont("helvetica", "normal")
+        doc.setFontSize(11)
+        const missionLines = doc.splitTextToSize(brandKit.missionStatement, pageWidth - 40)
+        doc.text(missionLines, 20, y)
+        y += missionLines.length * 7 + 10
+        doc.setDrawColor(229, 231, 240)
+        doc.line(20, y, pageWidth - 20, y)
+        y += 14
+
+        // ── Color Palette
+        const colors = [
+        { hex: brandKit.colorPalette.primary, name: brandKit.colorPalette.names.primary },
+        { hex: brandKit.colorPalette.secondary, name: brandKit.colorPalette.names.secondary },
+        { hex: brandKit.colorPalette.accent, name: brandKit.colorPalette.names.accent },
+        { hex: brandKit.colorPalette.background, name: brandKit.colorPalette.names.background },
+        { hex: brandKit.colorPalette.surface, name: brandKit.colorPalette.names.surface },
+        ]
+
+        // Row 1 — first 3
+        y = checkPage(y, 70)
+        colors.slice(0, 3).forEach((color, i) => {
+        const x = 20 + i * 60
+        const r = parseInt(color.hex.slice(1, 3), 16)
+        const g = parseInt(color.hex.slice(3, 5), 16)
+        const b = parseInt(color.hex.slice(5, 7), 16)
+        doc.setFillColor(r, g, b)
+        doc.roundedRect(x, y, 45, 28, 3, 3, "F")
+        doc.setTextColor(80, 80, 80)
+        doc.setFontSize(8)
+        doc.setFont("helvetica", "bold")
+        doc.text(color.name, x, y + 36)
+        doc.setFont("helvetica", "normal")
+        doc.text(color.hex, x, y + 43)
+        })
+
+        y += 55
+
+        // Row 2 — last 2
+        y = checkPage(y, 70)
+        colors.slice(3).forEach((color, i) => {
+        const x = 20 + i * 60
+        const r = parseInt(color.hex.slice(1, 3), 16)
+        const g = parseInt(color.hex.slice(3, 5), 16)
+        const b = parseInt(color.hex.slice(5, 7), 16)
+        doc.setFillColor(r, g, b)
+        doc.roundedRect(x, y, 45, 28, 3, 3, "F")
+        doc.setTextColor(80, 80, 80)
+        doc.setFontSize(8)
+        doc.setFont("helvetica", "bold")
+        doc.text(color.name, x, y + 36)
+        doc.setFont("helvetica", "normal")
+        doc.text(color.hex, x, y + 43)
+        })
+
+        y += 55
+        doc.setDrawColor(229, 231, 240)
+        doc.line(20, y, pageWidth - 20, y)
+        y += 14
+
+        y += 55
+        doc.setDrawColor(229, 231, 240)
+        doc.line(20, y, pageWidth - 20, y)
+        y += 14
+
+        // ── Typography
+        y = checkPage(y, 40)
+        doc.setTextColor(17, 17, 17)
+        doc.setFontSize(10)
+        doc.setFont("helvetica", "bold")
+        doc.text("TYPOGRAPHY", 20, y)
+        y += 10
+        doc.setFont("helvetica", "normal")
+        doc.setFontSize(11)
+        doc.text(`Heading: ${brandKit.typography.heading} — ${brandKit.typography.headingStyle}`, 20, y)
+        y += 9
+        doc.text(`Body: ${brandKit.typography.body} — ${brandKit.typography.bodyStyle}`, 20, y)
+        y += 14
+        doc.setDrawColor(229, 231, 240)
+        doc.line(20, y, pageWidth - 20, y)
+        y += 14
+
+        // ── Brand Voice
+        y = checkPage(y, 60)
+        doc.setFontSize(10)
+        doc.setFont("helvetica", "bold")
+        doc.text("BRAND VOICE", 20, y)
+        y += 10
+        doc.setFontSize(11)
+        doc.setFont("helvetica", "normal")
+        doc.text(`Tone: ${brandKit.voiceProfile.tone}`, 20, y)
+        y += 9
+        doc.text(`Personality: ${brandKit.voiceProfile.personality.join(", ")}`, 20, y)
+        y += 14
+
+        // Do / Don't columns
+        const doStartY = y
+        doc.setFontSize(9)
+        doc.setFont("helvetica", "bold")
+        doc.setTextColor(22, 163, 74)
+        doc.text("DO SAY", 20, y)
+        doc.setTextColor(220, 38, 38)
+        doc.text("DON'T SAY", 110, y)
+        y += 8
+
+        doc.setFont("helvetica", "normal")
+        doc.setTextColor(17, 17, 17)
+        const maxItems = Math.max(brandKit.voiceProfile.doSay.length, brandKit.voiceProfile.dontSay.length)
+        for (let i = 0; i < maxItems; i++) {
+        y = checkPage(y, 10)
+        if (brandKit.voiceProfile.doSay[i]) doc.text(`• ${brandKit.voiceProfile.doSay[i]}`, 20, y)
+        if (brandKit.voiceProfile.dontSay[i]) doc.text(`• ${brandKit.voiceProfile.dontSay[i]}`, 110, y)
+        y += 8
+        }
+
+        y += 6
+        doc.setDrawColor(229, 231, 240)
+        doc.line(20, y, pageWidth - 20, y)
+        y += 14
+
+        // ── Sample Copy
+        y = checkPage(y, 60)
+        doc.setFontSize(10)
+        doc.setFont("helvetica", "bold")
+        doc.setTextColor(17, 17, 17)
+        doc.text("SAMPLE COPY", 20, y)
+        y += 10
+        doc.setFontSize(11)
+        doc.setFont("helvetica", "normal")
+
+        const copyItems = [
+        { label: "Headline", value: brandKit.sampleCopy.heroHeadline },
+        { label: "Subheadline", value: brandKit.sampleCopy.heroSubheadline },
+        { label: "CTA", value: brandKit.sampleCopy.ctaButton },
+        { label: "Social", value: brandKit.sampleCopy.socialPost },
+        { label: "Email Subject", value: brandKit.sampleCopy.emailSubject },
+        ]
+
+        copyItems.forEach(item => {
+        y = checkPage(y, 10)
+        const lines = doc.splitTextToSize(`${item.label}: ${item.value}`, pageWidth - 40)
+        doc.text(lines, 20, y)
+        y += lines.length * 7 + 4
+        })
+
+        y += 6
+        doc.setDrawColor(229, 231, 240)
+        doc.line(20, y, pageWidth - 20, y)
+        y += 14
+
+        // ── Strategy
+        y = checkPage(y, 40)
+        doc.setFontSize(10)
+        doc.setFont("helvetica", "bold")
+        doc.setTextColor(17, 17, 17)
+        doc.text("BRAND STRATEGY", 20, y)
+        y += 10
+        doc.setFontSize(11)
+        doc.setFont("helvetica", "normal")
+        doc.text(`Archetype: ${brandKit.brandArchetype}`, 20, y)
+        y += 9
+        const posLines = doc.splitTextToSize(brandKit.competitorSpacing, pageWidth - 40)
+        y = checkPage(y, posLines.length * 7)
+        doc.text(posLines, 20, y)
+
+        // Convert PDF to blob
+        const pdfBlob = doc.output("blob")
+
+        // CONVERT LOGO TO PNG BLOB 
+        let pngBlob: Blob | null = null
+
+    if (image) {
+      const base64Data = image.replace("data:image/png;base64,", "")
+      const byteCharacters = atob(base64Data)
+      const byteNumbers = Array.from(byteCharacters).map(c => c.charCodeAt(0))
+      const byteArray = new Uint8Array(byteNumbers)
+      pngBlob = new Blob([byteArray], { type: "image/png" })
+    }
+
+    // ZIP EVERYTHING 
+    const zip = new JSZip()
+    const folderName = `BrandForge_${brandKit.brandName.replace(/\s+/g, "_")}`
+    const folder = zip.folder(folderName)!
+
+    folder.file("brand-guidelines.pdf", pdfBlob)
+    if (pngBlob) folder.file("logo.png", pngBlob)
+
+    const zipBlob = await zip.generateAsync({ type: "blob" })
+
+    // TRIGGER DOWNLOAD
+    const url = URL.createObjectURL(zipBlob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `${folderName}.zip`
+    a.click()
+    URL.revokeObjectURL(url)
+
+  } catch (error) {
+    console.error("Download failed:", error)
+  } finally {
+    setDownloading(false)
+  }
+}
 
     return(
         <div className="light min-h-dvh">
@@ -90,7 +343,7 @@ export default function Result() {
                     />
 
                     {/* Content */}
-                    <div className="relative z-1 flex flex-col gap-2 text-shadow-lg text-center md:text-left items-center md:items-start">
+                    <div className="relative z-1 flex flex-col gap-2 text-shadow-md text-center md:text-left items-center md:items-start">
                         <p className="text-xs! font-semibold! uppercase bg-white/10 w-fit px-5! py-2! rounded-md mb-2!">{brandKit.brandArchetype}</p>
                         <h1 className="">{brandKit.brandName}</h1>
                         <p className="font-bold!">{brandKit.tagline}</p>
@@ -357,11 +610,17 @@ export default function Result() {
                 </div>
 
                 {/* Download Button */}
-                {/* <button
-                    className="btn submit-btn"
+                <button
+                    className="btn submit-btn min-w-60!"
+                    onClick={handleDownload}
                 >
-                    ↓ Download Brand Kit
-                </button> */}
+                    {!downloading ? (
+                            "↓ Download Brand Kit" 
+                        ) : (
+                            <div className="w-5 h-5 rounded-full border-4 border-white/20 border-t-white animate-spin mb-6"/>
+                        )
+                    }
+                </button>
             </main>
         </div>
     )

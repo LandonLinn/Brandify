@@ -3,10 +3,11 @@
 import Image from "next/image"
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation"
+import { useAppContext } from "@/app/context/AppContext";
 
 export default function Header()  {
 
-    const [isDark, setIsDark] = useState(false);
+    const { isDark, setIsDark } = useAppContext();
 
     const pathname = usePathname();
     const router = useRouter();

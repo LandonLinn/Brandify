@@ -212,7 +212,7 @@ input:focus{
 
 .btn:hover{
   cursor: pointer;
-  filter: brightness(85%);
+  filter: brightness(95%);
 }
 
 .submit-btn{

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAppContext } from "./context/AppContext";
 
 const VIBES = [
   "Bold & Disruptive",
@@ -58,10 +59,11 @@ export default function Home() {
     setChars(200 - value.length)
   }
 
+  // Loading Status
+  const { setLoadingStatus } = useAppContext();
+
   const router = useRouter();
   const handleSubmit = async (e: any) => {
-      console.log("handleSubmit fired")
-
     e.preventDefault()
 
     // Error Check
@@ -83,6 +85,8 @@ export default function Home() {
   console.log("No errors, calling API...")
 
     // Call Claude API 
+    // Generating global status
+    setLoadingStatus("generating")
     setLoading(true)
     setError(null);
 
@@ -107,6 +111,7 @@ export default function Home() {
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
+      setLoadingStatus("done")
     }
   }
 

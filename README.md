@@ -167,12 +167,6 @@ Vercel auto-detects Next.js — no build configuration needed.
 
 ---
 
-## License
-
-MIT
-
----
-
 ## Author
 
 **Landon Linn** — [Linnium Technologies](https://linnium.com)

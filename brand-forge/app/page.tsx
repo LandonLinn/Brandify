@@ -15,7 +15,7 @@ const VIBES = [
 
 export default function Home() {
   // Text Area Chars
-  const [chars, setChars] = useState(200);
+  const [chars, setChars] = useState(300);
 
   // Form Data
   const [formData, setFormData] = useState({
@@ -56,7 +56,7 @@ export default function Home() {
   const handleTextAreaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value })
-    setChars(200 - value.length)
+    setChars(300 - value.length)
   }
 
   // Loading Status

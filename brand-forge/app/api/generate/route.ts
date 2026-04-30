@@ -35,12 +35,3 @@ export async function POST(req: Request){
         );
     }
 }
-
-
-
-
-
-
-
-
-// ChatGPT API - Image Generator Here

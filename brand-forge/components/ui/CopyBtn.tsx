@@ -23,7 +23,7 @@ export const CopyBtn = ({hexcode}: CopyProps) => {
 
     return (
         <button 
-            className="btn copy-btn px-2! py-2!"
+            className="btn copy-btn px-4! py-2! text-xs!"
             onClick={() => copyCode(hexcode)}
         >
             {`${copy === false ? "copy" : "copied!"}`}

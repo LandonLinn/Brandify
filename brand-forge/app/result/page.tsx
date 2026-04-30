@@ -1,68 +1,76 @@
-'use client'
+'use client';
 
-import { CopyBtn } from "@/components/ui/CopyBtn"
+import Image from "next/image";
 
-import { useEffect, useState } from "react"
-
-interface BrandKit {
-  brandName: string
-  tagline: string
-  missionStatement: string
-  voiceProfile: {
-    tone: string
-    personality: string[]
-    doSay: string[]
-    dontSay: string[]
-  }
-  colorPalette: {
-    primary: string
-    secondary: string
-    accent: string
-    background: string
-    surface: string
-    names: {
-      primary: string
-      secondary: string
-      accent: string
-      background: string
-      surface: string
-    }
-  }
-  typography: {
-    heading: string
-    body: string
-    headingStyle: string
-    bodyStyle: string
-  }
-  sampleCopy: {
-    heroHeadline: string
-    heroSubheadline: string
-    ctaButton: string
-    socialPost: string
-    emailSubject: string
-  }
-  logoConceptIdeas: string[]
-  brandArchetype: string
-  competitorSpacing: string
-}
+import { CopyBtn } from "@/components/ui/CopyBtn";
+import { useEffect, useState } from "react";
+import { BrandKit } from "@/lib/types";
 
 export default function Result() {
 
     // State for brandKit
     const [brandKit, setBrandKit] = useState<BrandKit | null>(null);
 
+    // State for images
+    const [image, setImage] = useState<string | null>(null)
+    const [imageLoading, setImageLoading] = useState(false);
+
+    // Brandkit mounted
     useEffect(() => {
         const data = localStorage.getItem("brandKit");
         if (data) {
             setBrandKit(JSON.parse(data));
         }
-    }, [])
+    }, []);
+
+    // BrandKit Change
+    useEffect(() => {
+        if (brandKit === null) return;
+
+        // Check if logo exists already
+        const savedImage = localStorage.getItem("brandImage");
+        if(savedImage) {
+            setImage(savedImage);
+            return;
+        }
+
+        // Fetch
+        const fetchImages = async () => {
+            try {
+                // Loading
+                setImageLoading(true);
+
+                const response = await fetch("/api/generate/images", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ brandKit })
+                });
+
+                // Response Failed
+                if (!response.ok) throw new Error("Failed to fetch images.");
+
+                // Get response data & Save
+                const data = await response.json();
+                localStorage.setItem("brandImage", data.image);
+                setImage(data.image);
+                
+            } catch (error) {
+                console.error("Image fetch failed: ", error);
+            } finally {
+                setImageLoading(false);
+            }
+        }
+        
+        // Call fetch function
+        fetchImages();
+
+    }, [brandKit]);
 
     if (!brandKit) return <p>loading...</p>
 
     return(
         <div className="light min-h-dvh">
-            <main className="container section">
+            <main className="container section flex flex-col items-center">
 
                 {/* Brand Heading Section */}
                 <div 
@@ -81,7 +89,7 @@ export default function Result() {
                     />
 
                     {/* Content */}
-                    <div className="relative z-1 flex flex-col gap-2 text-shadow-lg">
+                    <div className="relative z-1 flex flex-col gap-2 text-shadow-lg text-center md:text-left items-center md:items-start">
                         <p className="text-xs! font-semibold! uppercase bg-white/10 w-fit px-5! py-2! rounded-md mb-2!">{brandKit.brandArchetype}</p>
                         <h1 className="">{brandKit.brandName}</h1>
                         <p className="font-bold!">{brandKit.tagline}</p>
@@ -90,9 +98,9 @@ export default function Result() {
                 </div>
 
                 {/* Main Cards */}
-                <div className="mt-5! grid grid-cols-2 gap-5">
+                <div className="mt-5! grid grid-cols-1 md:grid-cols-2! gap-y-5 md:gap-x-5">
                     {/* Colors */}
-                    <div className="card result-card">
+                    <div className="card result-card col-start-1 md:row-start-1! w-full">
                         <p className="result-text">COLOR PALETTE</p>
                         {/* Colors container */}
                         <div className="w-full mt-2! flex flex-col gap-2 justify-between items-center">
@@ -187,7 +195,7 @@ export default function Result() {
                     </div>
 
                     {/* Typography */}
-                    <div className="card result-card flex flex-col gap-2">
+                    <div className="card result-card flex flex-col gap-2 row-start-2 md:row-start-1!">
                         <p className="result-text">TYPOGRAPHY</p>
                         <div className="flex flex-col gap-5 h-full">
                             {/* Heading */}
@@ -202,7 +210,7 @@ export default function Result() {
                                 <p className="text-sm! text-(--color-gray)!">{brandKit.typography.headingStyle}</p>
                             </div>
 
-                            <div className="h-1 border-b border-gray-200" />
+                            <div className="divider" />
 
                             {/* Body */}    
                             <div className="">
@@ -219,8 +227,134 @@ export default function Result() {
                         
                     </div>
 
+                    {/* Logos */}
+                    <div className="col-span-2 card result-card flex flex-col gap-2">
+                        <p className="result-text">LOGO</p>
+                        <div className="flex justify-bewteen gap-5 h-full">
+                            {image && (
+                                <div className="relative w-full h-64">
+                                    <Image
+                                    src={image}
+                                    alt="Brand Logo"
+                                    fill
+                                    sizes="100%"
+                                    className="object-contain"
+                                    loading="lazy"
+                                    />
+                                </div>
+                                )}
+                        </div>
+                        
+                    </div>
+
+                    {/* Brand Voice */}
+                    <div className="col-span-2  card result-card flex flex-col gap-2">
+                        <p className="result-text">BRAND VOICE</p>
+                        <div className="flex flex-col gap-5 h-full">
+                            {/* Personality */}
+                            <div className="flex gap-4 overflow-scroll">
+                                {brandKit.voiceProfile.personality.map((pers, i) => (
+                                    <p 
+                                        className="text-sm! personality-tag font-bold! rounded-full px-3! py-2!"
+                                        style={{color: brandKit.colorPalette.secondary, backgroundColor: `${brandKit.colorPalette.secondary}20`}}
+                                        key={i}
+                                    >
+                                        {pers}
+                                    </p>
+                                ))}
+                            </div>
+
+                            {/* Tone */}
+                            <p><strong>Tone:</strong> <span style={{ color:  brandKit.colorPalette.secondary }}>{`${brandKit.voiceProfile.tone}`}</span></p>
+
+                            {/* Do vs Dont Say */}
+                            <div className="grid grid-cols-1 gap-y-5 md:gap-y-0 md:gap-x-5 md:grid-cols-2">
+                                {/* Do say */}
+                                <div>
+                                    <p className="result-text text-sm! text-[#16A34A]!">DO SAY</p>
+                                    <ul className="pl-5!">
+                                        {brandKit.voiceProfile.doSay.map((d, i) => (
+                                            <li className="list-disc py-1!" key={i}>{d}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                {/* Dont say */}
+                                <div>
+                                    <p className="result-text text-sm! text-[#DC2626]!">DON'T SAY</p>
+                                    <ul className="pl-5!">
+                                        {brandKit.voiceProfile.dontSay.map((d, i) => (
+                                            <li className="list-disc py-1!" key={i}>{d}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            
+                        </div>
+                    </div>
+
+                    {/* Sample Copy */}
+                    <div className="col-span-2 card result-card flex flex-col gap-2">
+                        <p className="result-text font-sm!">SAMPLE COPY</p>
+                        {/* Hero Headline */}
+                        <div className="w-full flex items-center justify-between gap-4">
+                            <div>
+                                <p className="result-text text-xs! font-bold!">HERO HEADLINE</p>
+                                <p>{brandKit.sampleCopy.heroHeadline}</p>
+                            </div>
+                            
+                            {/* Copy btn */}
+                            <CopyBtn hexcode={brandKit.sampleCopy.heroHeadline} />
+                        </div>
+
+                        <div className="divider" />
+
+                        {/* CTA Btn */}
+                        <div className="w-full flex items-center justify-between gap-4">
+                            <div>
+                                <p className="result-text text-xs! font-bold!">CTA Button</p>
+                                <p>{brandKit.sampleCopy.ctaButton}</p>
+                            </div>
+                            
+                            {/* Copy btn */}
+                            <CopyBtn hexcode={brandKit.sampleCopy.ctaButton} />
+                        </div>
+
+                        <div className="divider" />
+
+                        {/* Social Post */}
+                        <div className="w-full flex items-center justify-between gap-4">
+                            <div>
+                                <p className="result-text text-xs! font-bold!">SOCIAL POST</p>
+                                <p>{brandKit.sampleCopy.socialPost}</p>
+                            </div>
+                            
+                            {/* Copy btn */}
+                            <CopyBtn hexcode={brandKit.sampleCopy.socialPost} />
+                        </div>
+
+                        <div className="divider" />
+
+                        {/* Email Subject */}
+                        <div className="w-full flex items-center justify-between gap-4">
+                            <div>
+                                <p className="result-text text-xs! font-bold!">EMAIL SUBJECT</p>
+                                <p>{brandKit.sampleCopy.emailSubject}</p>
+                            </div>
+                            
+                            {/* Copy btn */}
+                            <CopyBtn hexcode={brandKit.sampleCopy.emailSubject} />
+                        </div>
+                    </div>
                 </div>
-                
+
+                {/* Download Button */}
+                {/* <button
+                    className="btn submit-btn"
+                >
+                    ↓ Download Brand Kit
+                </button> */}
             </main>
         </div>
     )

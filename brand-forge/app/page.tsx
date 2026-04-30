@@ -60,7 +60,7 @@ export default function Home() {
 
   const router = useRouter();
   const handleSubmit = async (e: any) => {
-      console.log("handleSubmit fired") // ← add this
+      console.log("handleSubmit fired")
 
     e.preventDefault()
 
@@ -77,10 +77,10 @@ export default function Home() {
     // if (hasErrors) return;
 
     if (hasErrors) {
-  console.log("Errors found:", newErrors) // ← add this
-  return
-}
-console.log("No errors, calling API...") // ← add this
+    console.log("Errors found:", newErrors)
+    return
+  }
+  console.log("No errors, calling API...")
 
     // Call Claude API 
     setLoading(true)
@@ -98,7 +98,9 @@ console.log("No errors, calling API...") // ← add this
       const brandKit = await response.json();
 
       // Route
+      localStorage.removeItem("brandImage");
       localStorage.setItem("brandKit", JSON.stringify(brandKit));
+
       router.push("/result");
 
     } catch (error) {
@@ -110,18 +112,19 @@ console.log("No errors, calling API...") // ← add this
 
   return (
     <div className="dark min-h-dvh">
-      <main className="container--sm section flex flex-col gap-6">
+      <main className="container--sm section flex flex-col gap-6 w-full">
       
         {/* Title Section */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 items-center md:items-start text-center md:text-left">
             <h1 className="text-on-dark font-black">Build Your <br /><span className="text-gradient">Brand Identity</span></h1>
             <p className="text-on-dark--muted">AI-powered brand kit — logo, voice, color, copy, and strategy in seconds.</p>
         </div>
 
         {/* Form */}
         <form
-          className="card flex flex-col gap-5"
+          className="card flex flex-col gap-2 w-full"
           onSubmit={handleSubmit}
+          noValidate
         >
           {/* Brand Name */}
           <div className="flex flex-col gap-4">
@@ -135,6 +138,7 @@ console.log("No errors, calling API...") // ← add this
               value={formData.companyName}
               onChange={handleInputChange}
             />
+            <p className="error">{errors.companyName !== "" ? "Brand name required" : ""}</p>
           </div>
 
           {/* Industry */}
@@ -149,13 +153,14 @@ console.log("No errors, calling API...") // ← add this
               value={formData.companyIndustry}
               onChange={handleInputChange}
             />
+            <p className="error">{errors.companyIndustry !== "" ? "Industry required" : ""}</p>
           </div>
 
           {/* Brand Vibe */}
           <div className="flex flex-col gap-4">
             <label htmlFor="industry">BRAND VIBE <span className="text-(--color-tertiary)">*</span></label>
             {/* Container */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-2">
                 {/* Vibe Cards */}
                 {
                   VIBES.map((vibe, i) => (
@@ -169,13 +174,12 @@ console.log("No errors, calling API...") // ← add this
                     </button>
                   ))}
             </div>
+            <p className="error">{errors.selectedVibe !== "" ? "Brand vibe required" : ""}</p>
           </div>
 
           {/* Describe Brand */}
-          <div className="flex justify-between items-end">
-            <label htmlFor="brand-desc">EXPLAIN YOUR BUSINESS <span className="text-(--color-tertiary)">*</span></label>
-            <p className="text-on-dark--muted text-sm! mr-5! leading-none">{`${chars} Chars Remaining`}</p>
-          </div>
+          <label htmlFor="brand-desc" className="mb-2! text-nowrap">EXPLAIN YOUR BUSINESS <span className="text-(--color-tertiary)">*</span></label>
+            
           {/* Text Area */}
           <textarea 
             name="companyDesc" 
@@ -187,6 +191,8 @@ console.log("No errors, calling API...") // ← add this
             }}
             required
           />
+          <p className="text-on-dark--muted text-sm! self-end ">{`${chars} Chars Remaining`}</p>
+          <p className="error">{errors.companyDesc !== "" ? "Brand details required" : ""}</p>
 
           {/* Submit Button */}
           <button 

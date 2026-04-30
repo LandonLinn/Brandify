@@ -20,7 +20,7 @@ export default function Header()  {
     }, [pathname]);
 
     return(
-        <header className={`fixed ${ isDark ? "dark border-white/10" : "light border-[#E5E7F0]" } w-full h-16 border-b`}>
+        <header className={`fixed ${ isDark ? "dark border-white/10" : "light border-[#E5E7F0]" } w-full h-16 border-b z-100`}>
             <div className="container h-full flex items-center  justify-between gap-4 ">
                     {/* Logo */}
                     <div className="flex gap-4 items-center">

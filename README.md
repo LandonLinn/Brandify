@@ -1,5 +1,4 @@
-# BrandForge
-
+# Brandify
 **AI-powered brand identity generator** — generate a complete brand kit in seconds using Claude AI and GPT Image.
 
 Built with Next.js, TypeScript, Tailwind CSS, Anthropic Claude API, and OpenAI GPT Image API.

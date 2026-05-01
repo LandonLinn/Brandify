@@ -29,14 +29,14 @@ export default function Header()  {
                         <div className="relative h-8 w-8 shrink-0">
                             <Image
                                 src={"/BF-Logo.png"}
-                                alt="BrandForge Logo"
+                                alt="Brandify Logo"
                                 fill
                                 sizes="100%"
                                 priority={true}
                             />
                         </div>
                     
-                        <h1 className={` ${ isDark ? "text-on-dark" : "text-(--color-dark)" } font-bold text-xl!`}>BrandForge</h1>
+                        <h1 className={` ${ isDark ? "text-on-dark" : "text-(--color-dark)" } font-bold text-xl!`}>Brandify</h1>
                 </div>
 
                 {/* New brand btn*/}

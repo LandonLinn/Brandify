@@ -299,7 +299,7 @@ export default function Result() {
 
     // ZIP EVERYTHING 
     const zip = new JSZip()
-    const folderName = `BrandForge_${brandKit.brandName.replace(/\s+/g, "_")}`
+    const folderName = `Brandify${brandKit.brandName.replace(/\s+/g, "_")}`
     const folder = zip.folder(folderName)!
 
     folder.file("brand-guidelines.pdf", pdfBlob)
@@ -499,8 +499,9 @@ export default function Result() {
                             </div>
                             ) : (
                             // Show placeholder if failed
-                            <div className="w-full h-64 bg-gray-100 rounded-xl flex items-center justify-center">
+                            <div className="w-full h-64 bg-gray-100 rounded-xl flex items-center justify-center text-center">
                                 <p className="text-sm text-gray-400">No image generated</p>
+                                <p className="text-xs! text-gray-400">Try refreshing browser.</p>
                             </div>
                             )}
                         </div>

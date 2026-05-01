@@ -9,7 +9,7 @@ import { AppProvider } from "./context/AppContext";
 import LoadingModal from "@/components/ui/LoadingModal";
 
 export const metadata: Metadata = {
-  title: "BrandForge | AI Powered Brand Kit",
+  title: "Brandify  | AI Powered Brand Kit",
   description: "Generate your business's brand kit in seconds.",
 };
 

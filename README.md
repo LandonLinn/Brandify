@@ -7,7 +7,7 @@ Built with Next.js, TypeScript, Tailwind CSS, Anthropic Claude API, and OpenAI G
 
 ## What It Does
 
-Enter your company name, industry, brand vibe, and a short description. BrandForge generates a complete brand kit including:
+Enter your company name, industry, brand vibe, and a short description. Brandify generates a complete brand kit including:
 
 - Color palette with hex codes and color names
 - Typography recommendations (Google Fonts)
@@ -47,8 +47,8 @@ Enter your company name, industry, brand vibe, and a short description. BrandFor
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/brandforge.git
-cd brandforge
+git clone https://github.com/yourusername/brandify.git
+cd brandify
 
 # Install dependencies
 npm install

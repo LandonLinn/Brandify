@@ -42,7 +42,7 @@ export default function Home() {
   const charCount = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     let brandDesc = event.target.value;
     let totalLength = brandDesc.length;
-    setChars(200 - totalLength);
+    setChars(300 - totalLength);
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,7 +189,7 @@ export default function Home() {
           <textarea 
             name="companyDesc" 
             placeholder="e.g. We sell eco-friendly cleaning products for the home..." 
-            maxLength={200} 
+            maxLength={300} 
             onChange={(e) => {
               charCount(e);
               handleTextAreaChange(e);
